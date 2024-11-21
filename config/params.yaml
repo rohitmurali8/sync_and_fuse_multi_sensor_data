@@ -1,0 +1,27 @@
+lidar_files_path: ""
+gx_files_path: ""
+ace_files_path: ""
+
+cam1_intrinsics:
+- [1, 0, 0, 0]
+- [0, 1, 0, 0]
+- [0, 0, 1, 0]
+- [0, 0, 0, 1]
+
+cam2_intrinsics:
+- [1, 0, 0, 0]
+- [0, 1, 0, 0]
+- [0, 0, 1, 0]
+- [0, 0, 0, 1]
+
+lidar_cam1_extrinsics:
+- [1, 0, 0, 0]
+- [0, 1, 0, 0]
+- [0, 0, 1, 0]
+- [0, 0, 0, 1]
+
+lidar_cam2_extrinsics:
+- [1, 0, 0, 0]
+- [0, 1, 0, 0]
+- [0, 0, 1, 0]
+- [0, 0, 0, 1]
