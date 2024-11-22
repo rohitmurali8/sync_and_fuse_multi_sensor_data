@@ -1,6 +1,7 @@
 lidar_files_path: ""
-gx_files_path: ""
-ace_files_path: ""
+cam1_files_path: ""
+cam2_files_path: ""
+output_path: ""
 
 cam1_intrinsics:
 - [1, 0, 0, 0]
