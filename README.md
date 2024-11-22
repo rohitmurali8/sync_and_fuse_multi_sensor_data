@@ -1,6 +1,6 @@
-# Data Synchronizer for ROS2
+# Multi Sensor data Synchronizer and Lidar Camera fusion using ROS2
 
-This repository contains a **Data Synchronizer** designed for ROS2 that synchronizes and saves data from multiple sources such as camera images, LiDAR point clouds, and IMU data. The synchronized data is saved in structured directories, making it easy for further processing and analysis. The package can be used to collect data from multiple sensors, and it provides a simple and flexible solution for data logging.
+This repository contains a **Data Synchronizer** designed for ROS2 that synchronizes and saves data from multiple sources such as camera images, LiDAR point clouds, and IMU data. The synchronized data is saved in structured directories, making it easy for further processing and analysis. The package is used to extract data collected from multiple sensors and stored inside a ROS2 bag. This repository also includes the lidar_camera_fusion.cpp file, which enables synchronized processing of LiDAR and Camera data in ROS2. It provides the functionality to project the 3D LiDAR point cloud into camera images to create dense depth maps which would enable predicting the depth for each pixel in the associated image.
 
 ---
 
@@ -9,13 +9,14 @@ This repository contains a **Data Synchronizer** designed for ROS2 that synchron
 - **Synchronize multiple sensors**: Synchronizes data from ROS2 topics such as camera images (RGB), IMU (Inertial Measurement Unit), and LiDAR point clouds.
 - **Save data in custom formats**: Saves camera images as PNG files, LiDAR point clouds in PLY format, and IMU data in CSV-like text format.
 - **Configurable paths**: The save paths for each data type (camera, LiDAR, IMU) can be customized via a configuration file (`sync_data.yaml`).
-- **Custom point cloud format**: Includes additional custom fields such as velocity, intensity, reflectivity, etc., for LiDAR point clouds.
-
+- **Custom point cloud format**: Custom PCL structure available for fields such as velocity, intensity, reflectivity, etc., associated with LiDAR point clouds.
+- **Data Synchronization**: The script synchronizes camera image data and LiDAR point clouds using message filters to ensure that both data sources are aligned in time.
+- **Cusstom ROS2 topiics**: The camera, imu and lidar data published on specific ROS2 topics can be specified using custom configuration file (`params.yaml`).
 ---
 
 ## Dependencies
 
-- ROS2 (tested on `Foxy`, but may work with other versions)
+- ROS2 (tested on `HUMBLE`, but may work with other versions)
 - PCL (Point Cloud Library)
 - OpenCV
 - `cv_bridge`
@@ -66,7 +67,7 @@ source install/setup.bash
 
 Before running the data synchronizer, you need to configure the paths and topics in a YAML configuration file (`sync_data.yaml`).
 
-Create the configuration file `sync_data.yaml` in the root of your workspace or any directory and set the following values:
+Create the configuration file `sync_data.yaml` in the config directory of the current ROS2 package and set the following values:
 
 ```yaml
 folder_path: "/path/to/save/data/"
@@ -123,6 +124,30 @@ After running the node, you can navigate to the folder path defined in the YAML 
   - `imu/0.txt`, `imu/1.txt`, `imu/2.txt`...
 
 Each data type is saved in its respective directory and numbered sequentially based on the synchronized message count.
+
+### 7. Configure the Lidar-Camera fusion script
+
+The params.yaml file provides the configuration for lidar-camera fusion in the autonomous vehicle's perception system. It includes the following fields which needs to be populated by the user:
+
+- File paths for the saved Lidar and Camera data
+- Intrinsic calibration matrices for two cameras
+- Extrinsic calibration matrices for aligning the Lidar data with the two cameras
+- Output path for saving the depth maps generated for the ROS2 node 
+
+The primary purpose of this file is to ensure accurate data synchronization and transformation between multiple sensors. This calibration is critical for multi-sensor fusion and subsequent tasks such as depth estimation and object recognition.
+Note that the camera intriniscs and lidar camera extrinsics for multiple cameras should be calculated and populated by the user. There is a lot of MATLAB documentation to do so.
+
+### 8. Launch the Lidar-Camera fusion node
+
+After building and sourcing the workspace, run the ROS2 node to start projecting lidar data to camera image and saving the depth map images.
+
+```bash
+ros2 run <your_package_name> lidar_projection
+```
+
+The data from the synchronized topics will be saved to the output folder defined in your `params.yaml` file:
+
+The files are saved with sequential numbering (e.g., `0.png`, `1.png`, etc.) to correspond to the order in which data was synchronized.
 
 ---
 
